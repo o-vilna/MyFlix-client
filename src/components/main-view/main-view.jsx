@@ -5,7 +5,7 @@ import {MovieCard} from "../movie-card/movie-card";
 import {MovieView} from "../movie-view/movie-view";
 
 
-export const MainView = () => {
+const MainView = () => {
   const [movies, setMovies] = useState([
     {id:1, image: "https://m.media-amazon.com/images/I/51LlIEE-XFL.jpg", title: "Good Will Hunting", description: "Will Hunting, a janitor at MIT, has a gift for mathematics, but needs help from a psychologist to find direction in his life.",genre:"Drama", director:"Gus Van Sant"},
     {id:2, image:"https://m.media-amazon.com/images/I/8151Jk+voPL._SL1500_.jpg", title: "Silence of the Lambs",description:"A young FBI cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer.", genre:"Thriller",director:"Jonathan Demme"},
