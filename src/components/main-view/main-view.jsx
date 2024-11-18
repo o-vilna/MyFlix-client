@@ -16,14 +16,16 @@ const MainView = () => {
     .then((data) => {
       const moviesFromApi = data.map((doc) => {
         return {
-          imagePath: doc.ImagePath,
+          image: doc.ImagePath,
           id: doc._id,
           title: doc.Title,
           description: doc.Description,
           genre: doc.Genre.Name,
           director: doc.Director.Name,
           rating: doc.Rating,
-          releaseYear: doc.ReleaseYear.slice(0, 4)
+          releaseYear: doc.ReleaseYear.slice(0, 4),
+          featured: doc.Featured,
+          actors: doc.Actors
         };
       });
       setMovies(moviesFromApi);
