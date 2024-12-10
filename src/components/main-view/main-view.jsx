@@ -27,7 +27,6 @@ const MainView = () => {
     fetch ("https://star-flix-5d32add713bf.herokuapp.com/movies", {headers: {Authorization: `Bearer ${token}`}})
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
        const moviesFromApi = data.map((doc) => {
         return {
           image: doc.ImagePath,

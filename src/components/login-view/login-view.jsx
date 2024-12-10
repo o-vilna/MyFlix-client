@@ -1,5 +1,5 @@
-import React from "react";
-import {useState} from "react";
+import React, {useState} from "react";
+import PropTypes from "prop-types";
 import SignupView from "../signup-view/signup-view";
 
 export const LoginView = ({ onLoggedIn}) => {
@@ -63,4 +63,8 @@ return (
     <button type="submit">Login</button>
   </form>
 );
+};
+
+LoginView.propTypes= {
+  onLoggedIn: PropTypes.func.isRequired,
 };
