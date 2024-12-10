@@ -2,21 +2,25 @@
   "name": "myflix-client",
   "version": "1.0.0",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+<<<<<<< HEAD
     "parcel": "^2.12.0",
+=======
+    "@parcel/reporter-dev-server": "^2.13.0",
+    "prop-types": "^15.8.1",
+>>>>>>> task-3.5
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-scripts": "^5.0.1"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@parcel/transformer-sass": "^2.12.0",
+    "@parcel/transformer-sass": "^2.13.0",
+    "parcel": "^2.13.0",
     "process": "^0.11.10"
   },
   "browserslist": {
