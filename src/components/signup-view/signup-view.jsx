@@ -1,6 +1,6 @@
 import{ useState} from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form"
+import PropTypes from "prop-types";
+import {Container, Row, Col, Button, Form, Card, CardGroup} from "react-bootstrap";
 
 export const SignupView = () => {
   const [username, setUsername] = useState("");
@@ -29,7 +29,7 @@ export const SignupView = () => {
   }).then((response)=> {
     if (response.ok) {
       alert("Signup successful");
-      window.location.reload();
+      navigate("/login");
     } else {
       alert("Signup failed");
     }
@@ -41,6 +41,12 @@ export const SignupView = () => {
 };
 
   return (
+    <Container>
+      <Row>
+        <Col>
+        <CardGroup>
+          <Card>
+            <Card.Body>
     <Form onSubmit={handleSubmit}>
       <Form.Group controlId="signUpFormUsername">
       <Form.Label>Username:</Form.Label>
@@ -50,6 +56,7 @@ export const SignupView = () => {
           onChange={(e)=> setUsername(e.target.value)}
           required
           minLength="3"
+          placeholder="Enter your Username"
           />
       </Form.Group>
    <Form.Group controlId= "signUpFormPassword">
@@ -59,6 +66,8 @@ export const SignupView = () => {
        value={password}
        onChange={(e) => setPassword(e.target.value)}
        required
+       minLength="8"
+       placeholder="Your password must be 8 or more characters"
        />
    </Form.Group>
   <Form.Group controlId="signUpFormEmail">
@@ -68,6 +77,7 @@ export const SignupView = () => {
     value={email}
     onChange={(e) => setEmail(e.target.value)}
     required
+    placeholder="Enter your email address" 
     />
   </Form.Group>
   <Form.Group controlId="signUpFormBirthday">
@@ -79,7 +89,13 @@ export const SignupView = () => {
   required
   />
   </Form.Group>
-      <Button variant="primary" type="submit">Signup</Button>
+      <Button variant="primary" type="submit">Submit</Button>
     </Form>
+    </Card.Body>
+    </Card>
+    </CardGroup>
+        </Col>
+      </Row>
+    </Container>
   );
 };

@@ -1,12 +1,12 @@
 import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import {MovieCard} from "../movie-card/movie-card";
-import {MovieView} from "../movie-view/movie-view";
-import { LoginView } from "../login-view/login-view";
+import MovieView from "../movie-view/movie-view";
+import {LoginView} from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
+import {NaviBar} from "../navibar/navibar";
+import {HomeView} from "../home-view/home-view";
+import {Container, Row, Col, Card, CardGroup, Button} from "react-bootstrap";
 
 const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -49,6 +49,8 @@ const MainView = () => {
   }, [token]);
 
   return (
+    <Container fluid className="bg-light text-dark min-vh-100 p-3">
+    <NaviBar user={user} setUser={setUser} setToken={setToken}/>
     <Row className="justify-content-md-center">
     {!user ? (
         <Col md={5}>
@@ -62,23 +64,24 @@ const MainView = () => {
       />
        <p>
         Don't have an account?{""}
-        <Button onClick={() => setIsLogin(false)}>Sign up </Button>
+        <Button variant="link" onClick={() => setIsLogin(false)}>Sign up </Button>
         </p>
         </>
     ) :(
       <>
       <SignupView/>
       <p>
-        Already have an account?{""}
-        <Button onClick={() => setIsLogin(true)}>Log in</Button>
-      </p>
+                Already have an account?{" "}
+                <Button variant="link" onClick={() => setIsLogin(true)}>
+                  Log in
+                </Button>
+              </p>
       </>
     )}
       </Col>
       ) : selectedMovie ? (
         <Col md={8}>
       <MovieView
-      style={{ border: "1px solid green"}}
       movie={selectedMovie} 
       onBackClick={() => setSelectedMovie(null)}
        />
@@ -97,10 +100,10 @@ const MainView = () => {
       />
       </Col>
         ))}
-        <Button variant="primary" onClick={()=> {setUser(null); setToken(null);localStorage.clear();}}>Logout</Button>
         </>
     )}
     </Row>
+    </Container>
 );
 };
 export default MainView;

@@ -1,20 +1,57 @@
-
 import React from "react";
-import {Navbar, Nav, Link, Button} from "react-bootstrap";
+import PropTypes from "prop-types";
+import { Navbar, Nav, Button, Container } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
-export function NaviBar() {
+export const NaviBar = ({ user, setUser, setToken }) => {
+  
   return (
-    <Nav defaultActiveKey="/home" as="ul" className="mb-3">
-      <Nav.Item as="li">
-        <Nav.Link href="/myflix">myFlix</Nav.Link>
-      </Nav.Item>
-      <Nav.Item as="li">
-        <Nav.Link href="/home">Home</Nav.Link>
-      </Nav.Item>
-      <Nav.Item as="li">
-        <Nav.Link href="/profile">Profile</Nav.Link>
-      </Nav.Item>
-        <Button variant="primary" href="logout">Logout</Button>
-    </Nav>
+    <Navbar collapseOnSelect bg="dark" expand="lg" variant="dark"  className="fixed-top">
+      <Container fluid className="p-0">
+      <Navbar.Brand as={Link} to="/">
+        myFlix
+      </Navbar.Brand>
+      <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+      <Navbar.Collapse id="responsive-navbar-nav">
+        <Nav className="me-auto">
+          {user && (
+            <>
+              <Nav.Link as={Link} to="/home">
+                Home
+              </Nav.Link>
+              <Nav.Link as={Link} to="/profile">
+                Profile
+              </Nav.Link>
+            </>
+          )}
+        </Nav>
+        <Nav className="ms-auto">
+        {user ? (
+  <Button
+    variant="link"
+    className="text-light ms-2"
+    onClick={() => {
+      setUser(null);
+      setToken(null);
+      localStorage.clear();
+    }}
+  >
+    Logout
+  </Button>
+) : (
+  <Nav.Link as={Link} to="/login">
+    Login
+  </Nav.Link>
+)}
+        </Nav>
+      </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 }
+
+NaviBar.propTypes = {
+  user: PropTypes.object,
+  setUser: PropTypes.func.isRequired,
+  setToken: PropTypes.func.isRequired,
+};
