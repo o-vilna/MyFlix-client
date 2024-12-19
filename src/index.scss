@@ -1,10 +1,8 @@
-
 $primary: #212529;
-$body-bg: #fad85c;
 $font-family-base: 'Arial', sans-serif;
 
 body {
-  padding-top: 56px; /* Висота навігаційної панелі */
+  padding-top: 56px;
 }
 
 h1 {
@@ -12,4 +10,5 @@ h1 {
 }
 
 @import "../node_modules/bootstrap/scss/bootstrap";
+
 

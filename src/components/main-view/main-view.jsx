@@ -18,10 +18,6 @@ const MainView = () => {
   const [token, setToken] = useState(storedToken? storedToken: null);
 
   const [movies, setMovies] = useState([]);
-  
-  const [selectedMovie, setSelectedMovie] = useState(null);
-
-  const[isLogin,setIsLogin] = useState(true);
 
   useEffect(() => {
     if (!token) {

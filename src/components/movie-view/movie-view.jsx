@@ -12,7 +12,7 @@ const MovieView = ({ movie, onBackClick }) => {
           <p><strong>Director:</strong> {movie.director}</p>
           <p><strong>Genre:</strong> {movie.genre}</p>
           <p><strong>Description:</strong> {movie.description}</p>
-          <Button onClick={onBackClick} className="back-button">
+          <Button onClick={onBackClick} className="back-button" style={{ cursor: "pointer"}}>
             Back
           </Button>
         </Col>

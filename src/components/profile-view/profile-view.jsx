@@ -1,33 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import {NaviBar} from "../navibar/navibar";
+import {MovieCard} from "../movie-card/movie-card";
 
-const ProfileView = ({ user, setUser, setToken }) => {
+const ProfileView = ({ user, setUser, setToken, movies,token }) => {
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState("");
   const [birthday, setBirthday] = useState(user.birthday);
+  const [favoriteMovies, setFavoriteMovies] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Функція для обробки оновлення профілю
+  useEffect(() => {
+    if (!movies || !user) {
+      return;
+    }
+  
+    const favoriteMovies = movies.filter((m) => user.FavoriteMovies.includes(m.id));
+    setFavoriteMovies(favoriteMovies);
+  }, [user, movies]);
+  
+  
+
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    const token = localStorage.getItem('token');
     
     const updatedUser = {
-      username,
-      email,
-      password,
-      birthday
+      Username: username,
+      Email: email,
+      Password: password,
+      Birthday: birthday
     };
 
-    // Надіслати дані для оновлення на сервер
-    fetch("https://star-flix-5d32add713bf.herokuapp.com/users/update", {
+ 
+    fetch(`https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}`, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+         "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(updatedUser),
+      body: JSON.stringify(updatedUser)
     })
       .then((response) => response.json())
       .then((data) => {
@@ -41,6 +56,22 @@ const ProfileView = ({ user, setUser, setToken }) => {
         setErrorMessage("An error occurred while updating profile.");
         console.error("Error:", error);
       });
+  };
+
+  const handleDeregister =() => {
+    fetch(`https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}`, {
+      method: 'DELETE' ,
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+      alert('User deleted');
+      localStorage.clear();
+      window.location.reload();
+    })
+    .catch(err => console.error(err));
   };
 
   return (
@@ -93,16 +124,57 @@ const ProfileView = ({ user, setUser, setToken }) => {
                   />
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="float-end">
+                <Row className="d-flex justify-content-between">
+                <Col xs="auto">
+                <Button variant="warning" onClick={handleDeregister}>Delete Account</Button>
+                </Col>
+                <Col xs="auto">
+              <Button variant="primary" type="submit">
                   Update
                 </Button>
+              </Col>
+              </Row>
               </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+              </Card.Body>
+              </Card>
+              </Col>    
+        <Col md={6}>
+        <h3>Favorite Movies</h3>
+        <Row>
+          {favoriteMovies.length === 0 ? (
+            <p>You have no favorite movies yet.</p>
+          ) : (
+            favoriteMovies.map(movie => (
+              <Col md={4} key={movie.id}>
+                <MovieCard movie={movie} />
+              </Col>
+            ))
+          )}
+        </Row>
+      </Col>
+    </Row>
     </Container>
   );
+};
+
+ProfileView.propTypes = {
+  user: PropTypes.shape({
+    username: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    birthday: PropTypes.string.isRequired,
+    FavoriteMovies: PropTypes.arrayOf(PropTypes.string).isRequired
+  }).isRequired,
+  setUser: PropTypes.func.isRequired,
+  setToken: PropTypes.func.isRequired,
+  movies: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      title: PropTypes.string,
+      description: PropTypes.string,
+      image: PropTypes.string
+    })
+  ).isRequired,
+  token: PropTypes.string.isRequired
 };
 
 export default ProfileView;
