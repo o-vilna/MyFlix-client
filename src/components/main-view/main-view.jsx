@@ -96,3 +96,5 @@ const MainView = () => {
     </div>
   );
 };
+
+export default MainView;
