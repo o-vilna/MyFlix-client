@@ -1,40 +1,43 @@
+import "./movie-view.scss";
 import PropTypes from "prop-types";
+import { Row, Col, Button } from "react-bootstrap";
 
-export const MovieView = ({movie, onBackClick}) => {
+const MovieView = ({ movie, onBackClick }) => {
   return (
-    <div>
-      <div>
-        <img src={movie.image} alt= {movie.title}/>
-      </div>
-      <div>
-        <span>Title: </span>
-        <span>{movie.title}</span>
-      </div>
-      <div>
-        <span>Description: </span>
-        <span>{movie.description}</span>
-      </div>
-      <div>
-        <span>Genre: </span>
-        <span>{movie.genre}</span>
-      </div>
-      <div>
-        <span>Director: </span>
-        <span>{movie.director}</span>
-      </div>
-     <button onClick={onBackClick}>Back</button>
+    <div className="movie-view">
+      <Row>
+        <Col md={8}>
+          <h1>{movie.title}</h1>
+          <p><strong> Rating:</strong> {movie.rating}</p>
+          <p><strong>Director:</strong> {movie.director}</p>
+          <p><strong>Genre:</strong> {movie.genre}</p>
+          <p><strong>Description:</strong> {movie.description}</p>
+          <Button onClick={onBackClick} className="back-button" style={{ cursor: "pointer"}}>
+            Back
+          </Button>
+        </Col>
+        <Col md={4}>
+          <img
+            src={movie.image}
+            alt={movie.title}
+            className="img-fluid"
+            style={{ objectFit: "cover", height: "100%" }}
+          />
+        </Col>
+      </Row>
     </div>
-  )
+  );
 };
 
-MovieView.propTypes ={
-  movie: PropTypes.shape(
-    {
-      title: PropTypes.string.isRequired,
-      description: PropTypes.string.isRequired,
-      genre: PropTypes.string.isRequired,
-      director: PropTypes.string.isRequired,
-      image: PropTypes.string.isRequired
-    }).isRequired,
-    onBackClick: PropTypes.func.isRequired
+MovieView.propTypes = {
+  movie: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    genre: PropTypes.string.isRequired,
+    director: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+  }).isRequired,
+  onBackClick: PropTypes.func.isRequired,
 };
+
+export default MovieView;
