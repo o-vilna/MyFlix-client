@@ -1,37 +1,47 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
-import { Link } from "react-router-dom";
 
 export const NaviBar = ({ user, onLoggedOut }) => {
-  
   return (
-    <Navbar collapseOnSelect bg="dark" expand="lg" variant="dark"  className="fixed-top">
+    <Navbar collapseOnSelect bg="dark" expand="lg" variant="dark" className="fixed-top">
       <Container fluid className="p-0">
-      <Navbar.Brand as={Link} to="/">
-        myFlix
-      </Navbar.Brand>
-      <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-      <Navbar.Collapse id="responsive-navbar-nav">
-        <Nav className="me-auto">
-          {user ? (
-            <>
-              <Nav.Link as={Link} to="/login">
-                Login
-              </Nav.Link>
-              <Nav.Link as={Link} to="/signup">
-                Signup
-              </Nav.Link>
-            </>
-          ) : (
-            <>
-            <Nav.Link as={Link} to="/">
-            Home
-            </Nav.Link>
-            <Nav.Link as={Link} to="/profile">
-              Profile
-              </Nav.Link>
-                <Nav.Link onClick={onLoggedOut}>Logout</Nav.Link>
+        <Navbar.Brand>
+          myFlix
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="me-auto">
+            {!user ? (
+              <>
+                <Nav.Link>
+                  <Button variant="link" className="text-light" onClick={() => alert("Login clicked")}>
+                    Login
+                  </Button>
+                </Nav.Link>
+                <Nav.Link>
+                  <Button variant="link" className="text-light" onClick={() => alert("Signup clicked")}>
+                    Signup
+                  </Button>
+                </Nav.Link>
+              </>
+            ) : (
+              <>
+                <Nav.Link>
+                  <Button variant="link" className="text-light" onClick={() => alert("Home clicked")}>
+                    Home
+                  </Button>
+                </Nav.Link>
+                <Nav.Link>
+                  <Button variant="link" className="text-light" onClick={() => alert("Profile clicked")}>
+                    Profile
+                  </Button>
+                </Nav.Link>
+                <Nav.Link>
+                  <Button variant="link" className="text-light" onClick={onLoggedOut}>
+                    Logout
+                  </Button>
+                </Nav.Link>
               </>
             )}
           </Nav>
@@ -42,5 +52,6 @@ export const NaviBar = ({ user, onLoggedOut }) => {
 };
 
 NaviBar.propTypes = {
-  user: PropTypes.object
+  user: PropTypes.object,
+  onLoggedOut: PropTypes.func.isRequired,
 };
