@@ -73,7 +73,7 @@ return (
                     placeholder="Password"
                   />
                 </Form.Group>
-                <Button variant="primary" type="submit">
+                <Button variant="primary" size="sm" type="submit">
                   Login
                 </Button>
               </Form>

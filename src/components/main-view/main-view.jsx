@@ -1,6 +1,6 @@
-import {useEffect, useState} from "react";
-import {MovieCard} from "../movie-card/movie-card";
-import   MovieView from "../movie-view/movie-view";
+import { useEffect, useState } from "react";
+import { MovieCard } from "../movie-card/movie-card";
+import MovieView from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { NaviBar } from "../navibar/navibar";
@@ -11,44 +11,57 @@ const MainView = () => {
 
   const storedToken = localStorage.getItem("token");
 
-  const [user, setUser] =useState(storedUser? storedUser: null);
+  const [user, setUser] = useState(storedUser ? storedUser : null);
 
-  const [token, setToken] = useState(storedToken? storedToken: null);
+  const [token, setToken] = useState(storedToken ? storedToken : null);
 
   const [movies, setMovies] = useState([]);
-  
+
   const [selectedMovie, setSelectedMovie] = useState(null);
 
-  const[isLogin,setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
     if (!token) {
       return;
     }
-    fetch ("https://star-flix-5d32add713bf.herokuapp.com/movies", {headers: {Authorization: `Bearer ${token}`}})
-    .then((response) => response.json())
-    .then((data) => {
-       const moviesFromApi = data.map((doc) => {
-        return {
-          image: doc.ImagePath,
-          id: doc._id,
-          title: doc.Title,
-          description: doc.Description,
-          genre: doc.Genre.Name,
-          director: doc.Director.Name,
-          rating: doc.Rating,
-          releaseYear: doc.ReleaseYear.slice(0, 4),
-          featured: doc.Featured,
-          actors: doc.Actors
-        };
+    fetch("https://star-flix-5d32add713bf.herokuapp.com/movies", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const moviesFromApi = data.map((doc) => {
+          return {
+            image: doc.ImagePath,
+            id: doc._id,
+            title: doc.Title,
+            description: doc.Description,
+            genre: doc.Genre.Name,
+            director: doc.Director.Name,
+            rating: doc.Rating,
+            releaseYear: doc.ReleaseYear.slice(0, 4),
+            featured: doc.Featured,
+            actors: doc.Actors,
+          };
+        });
+        setMovies(moviesFromApi);
       });
-      setMovies(moviesFromApi);
-    });
   }, [token]);
+
+  const handleLoggedOut = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.clear();
+  };
 
   return (
     <Container fluid className="bg-light text-dark min-vh-100 p-3">
-      <NaviBar user={user} setUser={setUser} setToken={setToken} />
+      <NaviBar
+        user={user}
+        setUser={setUser}
+        setToken={setToken}
+        onLoggedOut={handleLoggedOut}
+      />
       <Row className="justify-content-md-center">
         {!user ? (
           <Col md={5}>
@@ -89,9 +102,9 @@ const MainView = () => {
         ) : movies.length === 0 ? (
           <div>The list is empty!</div>
         ) : (
-          <>
+          <Row className="g-4">
             {movies.map((movie) => (
-              <Col className="mb-4" key={movie.id} md={3}>
+              <Col xs={12} sm={6} md={4} lg={3} key={movie.id}>
                 <MovieCard
                   movie={movie}
                   onMovieClick={() => {
@@ -100,7 +113,7 @@ const MainView = () => {
                 />
               </Col>
             ))}
-          </>
+          </Row>
         )}
       </Row>
     </Container>

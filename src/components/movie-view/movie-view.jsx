@@ -1,32 +1,53 @@
 import "./movie-view.scss";
 import PropTypes from "prop-types";
-import { Row, Col, Button } from "react-bootstrap";
+import {Container, Row, Col, Button, Card } from "react-bootstrap";
 
 const MovieView = ({ movie, onBackClick }) => {
   return (
     <div className="movie-view">
-      <Row>
-        <Col md={8}>
-          <h1>{movie.title}</h1>
-          <p><strong> Rating:</strong> {movie.rating}</p>
-          <p><strong>Director:</strong> {movie.director}</p>
-          <p><strong>Genre:</strong> {movie.genre}</p>
-          <p><strong>Description:</strong> {movie.description}</p>
-          <Button onClick={onBackClick} className="back-button" style={{ cursor: "pointer"}}>
-            Back
-          </Button>
-        </Col>
-        <Col md={4}>
-          <img
-            src={movie.image}
-            alt={movie.title}
-            className="img-fluid"
-            style={{ objectFit: "cover", height: "100%" }}
-          />
+    <Container>
+      <Row className="justify-content-center">
+        <Col xs={12} md={10}>
+          <Card className="h-100 position-relative">
+            <Row>
+              <Col xs={12} md={6}>
+              <div className="image-section ml-md-3">
+                <Card.Img
+                  variant="top"
+                  src={movie.image}
+                  alt={movie.title}
+                  style={{
+                    objectFit: "cover",
+                    width: "100%",
+                    height: "auto",
+                  }}
+                />
+                </div>
+              </Col>
+              <Col xs={12} md={6}>
+                <Card.Body>
+                <div className="text-section">
+                  <Card.Title className="fw-bold">{movie.title}</Card.Title>
+                  <Card.Text><strong>Rating:</strong> {movie.rating}</Card.Text>
+                  <Card.Text><strong>Director:</strong> {movie.director}</Card.Text>
+                  <Card.Text><strong>Genre:</strong> {movie.genre}</Card.Text>
+                  <Card.Text><strong>Description:</strong> {movie.description}</Card.Text>
+                  </div>
+
+                  <div className="position-absolute bottom-0 end-0 m-3">
+                  <Button onClick={onBackClick} variant="primary" size="sm">
+                    Back
+                  </Button>
+                  </div>    
+                </Card.Body>
+              </Col>
+            </Row>
+          </Card>
         </Col>
       </Row>
-    </div>
-  );
+    </Container>
+  </div>
+);
 };
 
 MovieView.propTypes = {

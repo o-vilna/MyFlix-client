@@ -5,7 +5,7 @@ import Container from "react-bootstrap/Container";
 
 import "./index.scss";
 
-const App = () =>  {
+const App = () => {
   return (
     <Container fluid className="bg-light text-dark min-vh-100 p-3">
       <MainView />

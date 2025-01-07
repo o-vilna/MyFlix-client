@@ -16,7 +16,9 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
       return;
     }
 
-    const favoriteMovies = movies.filter((m) => user.FavoriteMovies.includes(m.id));
+    const favoriteMovies = movies.filter((m) =>
+      user.FavoriteMovies.includes(m.id)
+    );
     setFavoriteMovies(favoriteMovies);
   }, [user, movies]);
 
@@ -30,14 +32,17 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
       Birthday: birthday,
     };
 
-    fetch(`https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedUser),
-    })
+    fetch(
+      `https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUser),
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
@@ -53,10 +58,13 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
   };
 
   const handleDeregister = () => {
-    fetch(`https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(
+      `https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to delete user");
@@ -76,7 +84,9 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
           <Card>
             <Card.Body>
               <h2 className="text-center mb-4">Account Information</h2>
-              {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+              {errorMessage && (
+                <div className="alert alert-danger">{errorMessage}</div>
+              )}
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formUsername">
                   <Form.Control
@@ -121,7 +131,7 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
                     </Button>
                   </Col>
                   <Col xs="auto">
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" size="sm" type="submit">
                       Update
                     </Button>
                   </Col>
