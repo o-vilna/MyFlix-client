@@ -39,7 +39,7 @@ const MainView = () => {
             genre: doc.Genre.Name,
             director: doc.Director.Name,
             rating: doc.Rating,
-            releaseYear: doc.ReleaseYear.slice(0, 4),
+            releaseYear: parseInt(doc.ReleaseYear.slice(0, 4), 10),
             featured: doc.Featured,
             actors: doc.Actors,
           };
