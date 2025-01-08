@@ -1,5 +1,12 @@
-$color: steelblue;
+$primary: #212529;
+$font-family-base: 'Arial', sans-serif;
 
-.my-flix {
-  color: $color;
+body {
+  padding-top: 56px;
 }
+
+h1 {
+  font-weight: bold;
+}
+
+@import "../node_modules/bootstrap/scss/bootstrap";
