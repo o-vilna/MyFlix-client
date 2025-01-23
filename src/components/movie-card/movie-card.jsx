@@ -22,8 +22,7 @@ export const MovieCard = ({ movie, isFavorite, onFavorite }) => {
           variant={isFavorite ? "danger" : "primary"}
           className="mt-2"
           onClick={() => {
-            console.log("Button clicked for movie:", movie._id);
-            onFavorite(movie._id);
+            onFavorite(movie.id);
           }}
         >
           {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
