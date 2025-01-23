@@ -1,8 +1,15 @@
 import "./movie-view.scss";
 import PropTypes from "prop-types";
 import {Container, Row, Col, Button, Card } from "react-bootstrap";
+import { Link} from "react-router-dom";
+import { useParams } from "react-router";
 
-const MovieView = ({ movie, onBackClick }) => {
+
+const MovieView = ({ movies, onFavorite}) => {
+  const {Title} = useParams();
+
+  const movie = movies.find((b) => b.title === Title);
+
   return (
     <div className="movie-view">
     <Container>
@@ -35,9 +42,11 @@ const MovieView = ({ movie, onBackClick }) => {
                   </div>
 
                   <div className="position-absolute bottom-0 end-0 m-3">
-                  <Button onClick={onBackClick} variant="primary" size="sm">
+                    <Link to={`/`}>
+                  <Button className="back-button" size="sm">
                     Back
                   </Button>
+                  </Link>
                   </div>    
                 </Card.Body>
               </Col>
@@ -51,14 +60,18 @@ const MovieView = ({ movie, onBackClick }) => {
 };
 
 MovieView.propTypes = {
-  movie: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    genre: PropTypes.string.isRequired,
-    director: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
-  }).isRequired,
-  onBackClick: PropTypes.func.isRequired,
+  movies: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+      genre: PropTypes.string.isRequired,
+      director: PropTypes.string.isRequired,
+      image: PropTypes.string.isRequired,
+      rating: PropTypes.number, // Додаємо рейтинг, якщо це необхідно
+    })
+  ).isRequired,
+  onFavorite: PropTypes.func.isRequired,
 };
 
 export default MovieView;

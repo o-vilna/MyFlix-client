@@ -4,23 +4,56 @@ import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { MovieCard } from "../movie-card/movie-card";
 
 const ProfileView = ({ user, setUser, setToken, movies, token }) => {
-  const [username, setUsername] = useState(user.username);
-  const [email, setEmail] = useState(user.email);
+  console.log("Props received in ProfileView:", { user, token, movies });
+
+  const [username, setUsername] = useState(user?.Username || "");
+  const [email, setEmail] = useState(user?.Email || "");
   const [password, setPassword] = useState("");
-  const [birthday, setBirthday] = useState(user.birthday);
+  const [birthday, setBirthday] = useState(
+    user?.Birth_date?.slice(0, 10) || ""
+  );
   const [favoriteMovies, setFavoriteMovies] = useState([]);
+  const [userData, setUserData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    if (!movies || !user) {
+    if (!token) {
+      setErrorMessage("Unauthorized: No token provided.");
       return;
     }
 
-    const favoriteMovies = movies.filter((m) =>
-      user.FavoriteMovies.includes(m.id)
-    );
-    setFavoriteMovies(favoriteMovies);
-  }, [user, movies]);
+    fetch("https://star-flix-5d32add713bf.herokuapp.com/users", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const currentUser = data.find((u) => u.Username === user.Username);
+        if (currentUser) {
+          setUserData(currentUser);
+        } else {
+          setErrorMessage("User data not found.");
+        }
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+        console.error("Error fetching user data:", error);
+      });
+  }, [token, user]);
+
+  useEffect(() => {
+    if (movies && user && Array.isArray(user.FavoriteMovies)) {
+      const filteredMovies = movies.filter((movie) =>
+        user.FavoriteMovies.includes(movie._id)
+      );
+      setFavoriteMovies(filteredMovies);
+    }
+  }, [movies, user]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -28,8 +61,8 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
     const updatedUser = {
       Username: username,
       Email: email,
-      Password: password,
-      Birthday: birthday,
+      Password: password || undefined,
+      Birth_date: birthday,
     };
 
     fetch(
@@ -43,16 +76,22 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
         body: JSON.stringify(updatedUser),
       }
     )
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          alert("Profile updated successfully!");
-        } else {
-          setErrorMessage("Failed to update profile.");
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
+        return response.json();
+      })
+      .then((data) => {
+        alert("Profile updated successfully!");
+        setUser(data);
+        setUsername(data.Username);
+        setEmail(data.Email);
+        setBirthday(data.Birth_date);
+        setPassword("");
       })
       .catch((error) => {
-        setErrorMessage("An error occurred while updating profile.");
+        alert("Error: " + error.message);
         console.error("Error:", error);
       });
   };
@@ -66,15 +105,53 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
       }
     )
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to delete user");
+        if (response.ok) {
+          alert("User deleted");
+          localStorage.clear();
+          setUser(null);
+          setToken(null);
+        } else {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
-        alert("User deleted");
-        localStorage.clear();
-        setUser(null);
-        setToken(null);
       })
-      .catch((err) => console.error(err));
+      .catch((error) => {
+        alert("Error deleting user: " + error.message);
+        console.error("Error deleting user:", error);
+      });
+  };
+
+  const toggleFavoriteMovie = (movieId) => {
+    const isFavorite = user.FavoriteMovies.includes(movieId);
+
+    const method = isFavorite ? "DELETE" : "POST";
+    fetch(
+      `https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}/movies/${movieId}`,
+      {
+        method: method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((updatedUser) => {
+        setUser(updatedUser);
+        alert(
+          isFavorite
+            ? "Movie removed from favorites!"
+            : "Movie added to favorites!"
+        );
+      })
+      .catch((error) => {
+        console.error("Error updating favorite movies:", error);
+        alert("Error: " + error.message);
+      });
   };
 
   return (
@@ -91,36 +168,32 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
                 <Form.Group className="mb-3" controlId="formUsername">
                   <Form.Control
                     type="text"
-                    placeholder="Username"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => setUsername(e.target.value || "")}
                   />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formEmail">
                   <Form.Control
                     type="email"
-                    placeholder="Email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value || "")}
                   />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formPassword">
                   <Form.Control
                     type="password"
-                    placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value || "")}
                   />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBirthday">
                   <Form.Control
                     type="date"
-                    placeholder="Birthday"
                     value={birthday}
-                    onChange={(e) => setBirthday(e.target.value)}
+                    onChange={(e) => setBirthday(e.target.value || "")}
                   />
                 </Form.Group>
 
@@ -147,8 +220,12 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
               <p>You have no favorite movies yet.</p>
             ) : (
               favoriteMovies.map((movie) => (
-                <Col md={4} key={movie.id}>
-                  <MovieCard movie={movie} />
+                <Col md={4} key={movie._id}>
+                  <MovieCard
+                    movie={movie}
+                    isFavorite={user.FavoriteMovies.includes(movie.id)}
+                    onFavorite={() => toggleFavoriteMovie(movie._id)}
+                  />
                 </Col>
               ))
             )}
@@ -161,22 +238,21 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
 
 ProfileView.propTypes = {
   user: PropTypes.shape({
-    username: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    birthday: PropTypes.string.isRequired,
-    FavoriteMovies: PropTypes.arrayOf(PropTypes.string).isRequired,
-  }).isRequired,
+    Username: PropTypes.string,
+    Email: PropTypes.string,
+    Birth_date: PropTypes.string,
+    FavoriteMovies: PropTypes.arrayOf(PropTypes.string),
+  }),
   setUser: PropTypes.func.isRequired,
   setToken: PropTypes.func.isRequired,
   movies: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       title: PropTypes.string,
       description: PropTypes.string,
       image: PropTypes.string,
     })
   ).isRequired,
-  token: PropTypes.string.isRequired,
+  token: PropTypes.string,
 };
-
 export default ProfileView;

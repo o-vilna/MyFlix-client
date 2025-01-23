@@ -1,25 +1,29 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { MovieCard } from "../movie-card/movie-card";
 import MovieView from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { NaviBar } from "../navibar/navibar";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import ProfileView from "../profile-view/profile-view";
+import { Container, Row, Col } from "react-bootstrap";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
-
   const storedToken = localStorage.getItem("token");
-
   const [user, setUser] = useState(storedUser ? storedUser : null);
-
   const [token, setToken] = useState(storedToken ? storedToken : null);
-
   const [movies, setMovies] = useState([]);
 
-  const [selectedMovie, setSelectedMovie] = useState(null);
-
-  const [isLogin, setIsLogin] = useState(true);
+  const addToFavorites = (movieId) => {
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    if (!favorites.includes(movieId)) {
+      favorites.push(movieId);
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      setFavorites(favorites); 
+    }
+  };
 
   useEffect(() => {
     if (!token) {
@@ -30,20 +34,18 @@ const MainView = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        const moviesFromApi = data.map((doc) => {
-          return {
-            image: doc.ImagePath,
-            id: doc._id,
-            title: doc.Title,
-            description: doc.Description,
-            genre: doc.Genre.Name,
-            director: doc.Director.Name,
-            rating: doc.Rating,
-            releaseYear: parseInt(doc.ReleaseYear.slice(0, 4), 10),
-            featured: doc.Featured,
-            actors: doc.Actors,
-          };
-        });
+        const moviesFromApi = data.map((doc) => ({
+          image: doc.ImagePath,
+          id: doc._id,
+          title: doc.Title,
+          description: doc.Description,
+          genre: doc.Genre.Name,
+          director: doc.Director.Name,
+          rating: doc.Rating,
+          releaseYear: parseInt(doc.ReleaseYear.slice(0, 4), 10),
+          featured: doc.Featured,
+          actors: doc.Actors,
+        }));
         setMovies(moviesFromApi);
       });
   }, [token]);
@@ -54,68 +56,110 @@ const MainView = () => {
     localStorage.clear();
   };
 
+  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
   return (
     <Container fluid className="bg-light text-dark min-vh-100 p-3">
-      <NaviBar
-        user={user}
-        setUser={setUser}
-        setToken={setToken}
-        onLoggedOut={handleLoggedOut}
-      />
-      <Row className="justify-content-md-center">
-        {!user ? (
-          <Col md={5}>
-            {isLogin ? (
-              <>
-                <LoginView
-                  onLoggedIn={(user, token) => {
-                    setUser(user);
-                    setToken(token);
-                  }}
-                />
-                <p>
-                  Don't have an account?{" "}
-                  <Button variant="link" onClick={() => setIsLogin(false)}>
-                    Sign up
-                  </Button>
-                </p>
-              </>
-            ) : (
-              <>
-                <SignupView />
-                <p>
-                  Already have an account?{" "}
-                  <Button variant="link" onClick={() => setIsLogin(true)}>
-                    Log in
-                  </Button>
-                </p>
-              </>
-            )}
-          </Col>
-        ) : selectedMovie ? (
-          <Col md={8}>
-            <MovieView
-              movie={selectedMovie}
-              onBackClick={() => setSelectedMovie(null)}
+      <BrowserRouter>
+        <NaviBar
+          user={user}
+          setUser={setUser}
+          setToken={setToken}
+          onLoggedOut={handleLoggedOut}
+        />
+        <Row className="justify-content-md-center">
+          <Routes>
+            <Route
+              path="/signup"
+              element={
+                !user ? (
+                  <Col md={5}>
+                    <SignupView />
+                  </Col>
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
             />
-          </Col>
-        ) : movies.length === 0 ? (
-          <div>The list is empty!</div>
-        ) : (
-          <Row className="g-4">
-            {movies.map((movie) => (
-              <Col xs={12} sm={6} md={4} lg={3} key={movie.id}>
-                <MovieCard
-                  movie={movie}
-                  onMovieClick={() => {
-                    setSelectedMovie(movie);
-                  }}
-                />
-              </Col>
-            ))}
-          </Row>
-        )}
-      </Row>
+            <Route
+              path="/login"
+              element={
+                user ? (
+                  <Navigate to="/" />
+                ) : (
+                  <Col md={5}>
+                    <LoginView
+                      onLoggedIn={(user, token) => {
+                        setUser(user);
+                        setToken(token);
+                      }}
+                    />
+                  </Col>
+                )
+              }
+            />
+            <Route
+              path="/"
+              element={
+                !user ? (
+                  <Navigate to="/login" replace />
+                ) : movies.length === 0 ? (
+                  <div>The list is empty!</div>
+                ) : (
+                  <Row className="g-4">
+                    {movies.map((movie) => (
+                      <Col xs={12} sm={6} md={4} lg={3} key={movie._id}>
+                        <MovieCard
+                          movie={movie}
+                          isFavorite={
+                            favorites.includes(movie._id)
+                              ? () => removeFromFavorites(movie._id)
+                              : () => addToFavorites(movie._id)
+                          }
+                        />
+                      </Col>
+                    ))}
+                  </Row>
+                )
+              }
+            />
+            <Route
+              path="/movies/:Title"
+              element={
+                !user ? (
+                  <Navigate to="/login" replace />
+                ) : movies.length === 0 ? (
+                  <div>The list is empty!</div>
+                ) : (
+                  <MovieView
+                    movies={movies}
+                    onFavorite={(movieId) => console.log(movieId)}
+                  />
+                )
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <Container className="mt-4">
+                  <Row className="justify-content-center">
+                    <Col xs={12} md={8} lg={6}>
+                      <ProfileView
+                        user={user}
+                        movies={movies}
+                        token={token}
+                        setUser={setUser}
+                        setToken={setToken}
+                      />
+                    </Col>
+                  </Row>
+                </Container>
+              }
+            />
+          </Routes>
+        </Row>
+      </BrowserRouter>
     </Container>
   );
 };

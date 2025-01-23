@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Navbar, Nav, Button, Container } from "react-bootstrap";
+import { Navbar, Nav, Container } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 export const NaviBar = ({ user, onLoggedOut }) => {
   return (
@@ -12,59 +13,29 @@ export const NaviBar = ({ user, onLoggedOut }) => {
       className="fixed-top"
     >
       <Container fluid className="p-0">
-        <Navbar.Brand>myFlix</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/">myFlix</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
             {!user ? (
               <>
-                <Nav.Link>
-                  <Button
-                    variant="link"
-                    className="text-light"
-                    onClick={() => alert("Login clicked")}
-                  >
-                    Login
-                  </Button>
+                <Nav.Link as={Link} to="/login">
+                  Login
                 </Nav.Link>
-                <Nav.Link>
-                  <Button
-                    variant="link"
-                    className="text-light"
-                    onClick={() => alert("Signup clicked")}
-                  >
-                    Signup
-                  </Button>
+                <Nav.Link as={Link} to="/signup">
+                  Signup
                 </Nav.Link>
               </>
             ) : (
               <>
-                <Nav.Link>
-                  <Button
-                    variant="link"
-                    className="text-light"
-                    onClick={() => alert("Home clicked")}
-                  >
-                    Home
-                  </Button>
+                <Nav.Link as={Link} to="/">
+                  Home
                 </Nav.Link>
-                <Nav.Link>
-                  <Button
-                    variant="link"
-                    className="text-light"
-                    onClick={() => alert("Profile clicked")}
-                  >
-                    Profile
-                  </Button>
+                <Nav.Link as={Link} to="/profile">
+                  Profile
                 </Nav.Link>
-                <Nav.Link>
-                  <Button
-                    variant="link"
-                    className="text-light"
-                    onClick={onLoggedOut}
-                  >
-                    Logout
-                  </Button>
+                <Nav.Link onClick={onLoggedOut}>
+                  Logout
                 </Nav.Link>
               </>
             )}

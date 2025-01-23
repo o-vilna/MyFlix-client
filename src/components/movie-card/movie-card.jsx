@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
 import { Container, Row, Col, Button, Card } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
-export const MovieCard = ({ movie, onMovieClick }) => {
+export const MovieCard = ({ movie, isFavorite, onFavorite }) => {
   return (
     <Card className="h-100">
       <Card.Img
@@ -12,12 +13,20 @@ export const MovieCard = ({ movie, onMovieClick }) => {
       <Card.Body className="d-flex flex-column">
         <Card.Title className="fw-bold">{movie.title}</Card.Title>
         <Card.Text className="flex-grow-1">{movie.description}</Card.Text>
+        <Link to={`/movies/${encodeURIComponent(movie.title)}`}>
+          <Button variant="link" className="mt-auto">
+            More Info
+          </Button>
+        </Link>
         <Button
-          onClick={() => onMovieClick(movie)}
-          variant="link"
-          className="mt-auto"
+          variant={isFavorite ? "danger" : "primary"}
+          className="mt-2"
+          onClick={() => {
+            console.log("Button clicked for movie:", movie._id);
+            onFavorite(movie._id);
+          }}
         >
-          More Info
+          {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
         </Button>
       </Card.Body>
     </Card>
@@ -37,7 +46,8 @@ MovieCard.propTypes = {
     rating: PropTypes.number,
     releaseYear: PropTypes.number,
   }).isRequired,
-  onMovieClick: PropTypes.func.isRequired,
+  isFavorite: PropTypes.bool.isRequired, // Додаємо новий prop
+  onFavorite: PropTypes.func.isRequired,
 };
 
 export default MovieCard;
