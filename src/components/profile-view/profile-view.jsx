@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
+import "./profile-view.scss";
+import { Row, Col, Form, Button, Card } from "react-bootstrap";
 import { MovieCard } from "../movie-card/movie-card";
+import { Navigate } from "react-router-dom";
 
 const ProfileView = ({ user, setUser, setToken, movies, token }) => {
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
   console.log("Props received in ProfileView:", { user, token, movies });
 
   const [username, setUsername] = useState(user?.Username || "");
@@ -49,7 +54,7 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
   useEffect(() => {
     if (movies && user && Array.isArray(user.FavoriteMovies)) {
       const filteredMovies = movies.filter((movie) =>
-        user.FavoriteMovies.includes(movie._id)
+        user.FavoriteMovies.includes(movie.id)
       );
       setFavoriteMovies(filteredMovies);
     }
@@ -155,84 +160,92 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
   };
 
   return (
-    <Container fluid className="bg-light text-dark min-vh-100 p-3">
-      <Row className="justify-content-center mt-4">
-        <Col md={6}>
-          <Card>
-            <Card.Body>
-              <h2 className="text-center mb-4">Account Information</h2>
-              {errorMessage && (
-                <div className="alert alert-danger">{errorMessage}</div>
-              )}
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="formUsername">
-                  <Form.Control
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value || "")}
-                  />
-                </Form.Group>
+    <Row className="mb-5">
+      <Col xs={12} md={6} className="mb-4">
+        <Card className="max-w-100">
+          <Card.Body>
+            <h3 className="text-center mb-4">Account Information</h3>
+            {errorMessage && (
+              <div className="alert alert-danger">{errorMessage}</div>
+            )}
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3" controlId="formUsername">
+                <Form.Control
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value || "")}
+                />
+              </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formEmail">
-                  <Form.Control
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value || "")}
-                  />
-                </Form.Group>
+              <Form.Group className="mb-3" controlId="formEmail">
+                <Form.Control
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value || "")}
+                />
+              </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formPassword">
-                  <Form.Control
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value || "")}
-                  />
-                </Form.Group>
+              <Form.Group className="mb-3" controlId="formPassword">
+                <Form.Control
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value || "")}
+                />
+              </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formBirthday">
-                  <Form.Control
-                    type="date"
-                    value={birthday}
-                    onChange={(e) => setBirthday(e.target.value || "")}
-                  />
-                </Form.Group>
+              <Form.Group className="mb-3" controlId="formBirthday">
+                <Form.Control
+                  type="date"
+                  value={birthday}
+                  onChange={(e) => setBirthday(e.target.value || "")}
+                />
+              </Form.Group>
 
-                <Row className="d-flex justify-content-between">
-                  <Col xs="auto">
-                    <Button variant="warning" onClick={handleDeregister}>
-                      Delete Account
-                    </Button>
-                  </Col>
-                  <Col xs="auto">
-                    <Button variant="primary" size="sm" type="submit">
-                      Update
-                    </Button>
-                  </Col>
-                </Row>
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={6}>
-          <h3>Favorite Movies</h3>
-          <Row>
-            {favoriteMovies.length === 0 ? (
-              <p>You have no favorite movies yet.</p>
-            ) : (
-              favoriteMovies.map((movie) => (
-                <Col md={4} key={movie._id}>
+              <div className="d-flex justify-content-between">
+                <Col xs="auto">
+                  <Button variant="danger" size="sm" onClick={handleDeregister}>
+                    Delete Account
+                  </Button>
+                </Col>
+                <Col xs="auto">
+                  <Button variant="primary" size="sm" type="submit">
+                    Update
+                  </Button>
+                </Col>
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Col>
+
+      <Row>
+        <Col xs={12}>
+          <h3 className="mb-3">Favorites</h3>
+          {favoriteMovies.length === 0 ? (
+            <p>You have no favorite movies yet.</p>
+          ) : (
+            <Row>
+              {favoriteMovies.map((movie) => (
+                <Col
+                  key={movie.id}
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  className="d-flex mb-4"
+                >
                   <MovieCard
                     movie={movie}
                     isFavorite={user.FavoriteMovies.includes(movie.id)}
-                    onFavorite={() => toggleFavoriteMovie(movie._id)}
+                    onFavorite={() => toggleFavoriteMovie(movie.id)}
                   />
                 </Col>
-              ))
-            )}
-          </Row>
+              ))}
+            </Row>
+          )}
         </Col>
       </Row>
-    </Container>
+    </Row>
   );
 };
 

@@ -13,7 +13,9 @@ export const NaviBar = ({ user, onLoggedOut }) => {
       className="fixed-top"
     >
       <Container fluid className="p-0">
-        <Navbar.Brand as={Link} to="/">myFlix</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/">
+          myFlix
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
@@ -34,9 +36,7 @@ export const NaviBar = ({ user, onLoggedOut }) => {
                 <Nav.Link as={Link} to="/profile">
                   Profile
                 </Nav.Link>
-                <Nav.Link onClick={onLoggedOut}>
-                  Logout
-                </Nav.Link>
+                <Nav.Link onClick={onLoggedOut}>Logout</Nav.Link>
               </>
             )}
           </Nav>

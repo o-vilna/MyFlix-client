@@ -12,17 +12,66 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const storedToken = localStorage.getItem("token");
+  const storedFavorites = JSON.parse(localStorage.getItem("favorites"));
   const [user, setUser] = useState(storedUser ? storedUser : null);
   const [token, setToken] = useState(storedToken ? storedToken : null);
   const [movies, setMovies] = useState([]);
+  const [favorites, setFavorites] = useState(storedFavorites || []);
+  const isFavorite = (movieId) => favorites.includes(movieId);
 
   const addToFavorites = (movieId) => {
-    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    if (!favorites.includes(movieId)) {
-      favorites.push(movieId);
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-      setFavorites(favorites); 
+    if (!token) {
+      return;
     }
+    fetch(
+      `https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}/movies/${movieId}`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (!isFavorite(movieId)) {
+          setFavorites([...favorites, movieId]);
+          localStorage.setItem("user", JSON.stringify(data));
+          localStorage.setItem(
+            "favorites",
+            JSON.stringify(data.FavoriteMovies)
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  const removeFromFavorites = (movieId) => {
+    if (!token) {
+      return;
+    }
+    fetch(
+      `https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}/movies/${movieId}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (isFavorite(movieId)) {
+          setFavorites(favorites.filter((id) => id !== movieId));
+          localStorage.setItem("user", JSON.stringify(data));
+          localStorage.setItem(
+            "favorites",
+            JSON.stringify(data.FavoriteMovies)
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   useEffect(() => {
@@ -55,8 +104,6 @@ const MainView = () => {
     setToken(null);
     localStorage.clear();
   };
-
-  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
   return (
     <Container fluid className="bg-light text-dark min-vh-100 p-3">
@@ -108,13 +155,14 @@ const MainView = () => {
                 ) : (
                   <Row className="g-4">
                     {movies.map((movie) => (
-                      <Col xs={12} sm={6} md={4} lg={3} key={movie._id}>
+                      <Col xs={12} sm={6} md={4} lg={3} key={movie.id}>
                         <MovieCard
                           movie={movie}
-                          isFavorite={
-                            favorites.includes(movie._id)
-                              ? () => removeFromFavorites(movie._id)
-                              : () => addToFavorites(movie._id)
+                          isFavorite={isFavorite(movie.id)}
+                          onFavorite={
+                            isFavorite(movie.id)
+                              ? () => removeFromFavorites(movie.id)
+                              : () => addToFavorites(movie.id)
                           }
                         />
                       </Col>
@@ -142,19 +190,17 @@ const MainView = () => {
             <Route
               path="/profile"
               element={
-                <Container className="mt-4">
-                  <Row className="justify-content-center">
-                    <Col xs={12} md={8} lg={6}>
-                      <ProfileView
-                        user={user}
-                        movies={movies}
-                        token={token}
-                        setUser={setUser}
-                        setToken={setToken}
-                      />
-                    </Col>
-                  </Row>
-                </Container>
+                user ? (
+                <ProfileView
+                  user={user}
+                  movies={movies}
+                  token={token}
+                  setUser={setUser}
+                  setToken={setToken}
+                />
+              ) : (
+                <Navigate to="/login" replace />
+              )
               }
             />
           </Routes>
