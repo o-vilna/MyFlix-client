@@ -8,7 +8,7 @@ import "./index.scss";
 const App = () => {
   return (
     <Container fluid className="bg-light text-dark min-vh-100 p-3">
-      <MainView />
+      <MainView/>
     </Container>
   );
 };

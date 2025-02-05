@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Container, Row, Col, Button, Card } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 export const MovieCard = ({ movie, isFavorite, onFavorite }) => {
@@ -23,7 +23,7 @@ export const MovieCard = ({ movie, isFavorite, onFavorite }) => {
           className="mt-2"
           onClick={() => {
             if (onFavorite) {
-            onFavorite(movie.id);
+              onFavorite(movie.id);
             }
           }}
         >
@@ -47,7 +47,7 @@ MovieCard.propTypes = {
     rating: PropTypes.number,
     releaseYear: PropTypes.number,
   }).isRequired,
-  isFavorite: PropTypes.bool.isRequired, // Додаємо новий prop
+  isFavorite: PropTypes.bool.isRequired,
   onFavorite: PropTypes.func.isRequired,
 };
 

@@ -5,11 +5,24 @@ import { Row, Col, Form, Button, Card } from "react-bootstrap";
 import { MovieCard } from "../movie-card/movie-card";
 import { Navigate } from "react-router-dom";
 
-const ProfileView = ({ user, setUser, setToken, movies, token }) => {
+const ProfileView = ({
+  user,
+  setUser,
+  setToken,
+  movies,
+  token,
+  favoriteMovies,
+  toggleFavorite,
+}) => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-  console.log("Props received in ProfileView:", { user, token, movies });
+  console.log("Props received in ProfileView:", {
+    user,
+    token,
+    movies,
+    favoriteMovies,
+  });
 
   const [username, setUsername] = useState(user?.Username || "");
   const [email, setEmail] = useState(user?.Email || "");
@@ -17,7 +30,7 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
   const [birthday, setBirthday] = useState(
     user?.Birth_date?.slice(0, 10) || ""
   );
-  const [favoriteMovies, setFavoriteMovies] = useState([]);
+
   const [userData, setUserData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -51,24 +64,18 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
       });
   }, [token, user]);
 
-  useEffect(() => {
-    if (movies && user && Array.isArray(user.FavoriteMovies)) {
-      const filteredMovies = movies.filter((movie) =>
-        user.FavoriteMovies.includes(movie.id)
-      );
-      setFavoriteMovies(filteredMovies);
-    }
-  }, [movies, user]);
-
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const updatedUser = {
       Username: username,
       Email: email,
-      Password: password || undefined,
       Birth_date: birthday,
     };
+
+    if (password.trim() !== "") {
+      updatedUser.Password = password;
+    }
 
     fetch(
       `https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}`,
@@ -93,6 +100,8 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
         setUsername(data.Username);
         setEmail(data.Email);
         setBirthday(data.Birth_date);
+
+        localStorage.setItem("user", JSON.stringify(data));
         setPassword("");
       })
       .catch((error) => {
@@ -120,41 +129,6 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
         }
       })
       .catch((error) => {
-        alert("Error deleting user: " + error.message);
-        console.error("Error deleting user:", error);
-      });
-  };
-
-  const toggleFavoriteMovie = (movieId) => {
-    const isFavorite = user.FavoriteMovies.includes(movieId);
-
-    const method = isFavorite ? "DELETE" : "POST";
-    fetch(
-      `https://star-flix-5d32add713bf.herokuapp.com/users/${user.Username}/movies/${movieId}`,
-      {
-        method: method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-        return response.json();
-      })
-      .then((updatedUser) => {
-        setUser(updatedUser);
-        alert(
-          isFavorite
-            ? "Movie removed from favorites!"
-            : "Movie added to favorites!"
-        );
-      })
-      .catch((error) => {
-        console.error("Error updating favorite movies:", error);
         alert("Error: " + error.message);
       });
   };
@@ -236,8 +210,8 @@ const ProfileView = ({ user, setUser, setToken, movies, token }) => {
                 >
                   <MovieCard
                     movie={movie}
-                    isFavorite={user.FavoriteMovies.includes(movie.id)}
-                    onFavorite={() => toggleFavoriteMovie(movie.id)}
+                    isFavorite={true}
+                    onFavorite={() => toggleFavorite(movie.id)}
                   />
                 </Col>
               ))}
@@ -267,5 +241,19 @@ ProfileView.propTypes = {
     })
   ).isRequired,
   token: PropTypes.string,
+  favoriteMovies: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string,
+      description: PropTypes.string,
+      genre: PropTypes.string,
+      director: PropTypes.string,
+      image: PropTypes.string.isRequired,
+      featured: PropTypes.bool,
+      actors: PropTypes.array,
+      rating: PropTypes.number,
+      releaseYear: PropTypes.number,
+    })
+  ).isRequired,
 };
 export default ProfileView;

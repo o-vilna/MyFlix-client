@@ -1,9 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Navbar, Nav, Container } from "react-bootstrap";
+import { Navbar, Nav, Container,Form, FormControl} from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-export const NaviBar = ({ user, onLoggedOut }) => {
+export const NaviBar = ({ user, onLoggedOut, onSearch }) => {
+  const handleInputChange = (e) => {
+    onSearch(e.target.value);
+  };
+
   return (
     <Navbar
       collapseOnSelect
@@ -40,6 +44,17 @@ export const NaviBar = ({ user, onLoggedOut }) => {
               </>
             )}
           </Nav>
+          {user && (
+            <Form className="d-flex">
+              <FormControl
+                type="search"
+                placeholder="Search movies..."
+                className="me-2"
+                aria-label="Search"
+                onChange={handleInputChange}
+              />
+            </Form>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>
@@ -49,4 +64,6 @@ export const NaviBar = ({ user, onLoggedOut }) => {
 NaviBar.propTypes = {
   user: PropTypes.object,
   onLoggedOut: PropTypes.func.isRequired,
+  onSearch: PropTypes.func.isRequired,
 };
+export default NaviBar;
