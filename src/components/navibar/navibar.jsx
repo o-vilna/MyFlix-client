@@ -1,12 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Navbar, Nav, Container,Form, FormControl} from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export const NaviBar = ({ user, onLoggedOut, onSearch }) => {
+  const location = useLocation();
   const handleInputChange = (e) => {
     onSearch(e.target.value);
   };
+
+  const shouldShowSearch = location.pathname !== "/profile"&&
+  !location.pathname.startsWith("/movies/");
 
   return (
     <Navbar
@@ -44,7 +48,7 @@ export const NaviBar = ({ user, onLoggedOut, onSearch }) => {
               </>
             )}
           </Nav>
-          {user && (
+          {user && shouldShowSearch && (
             <Form className="d-flex">
               <FormControl
                 type="search"
@@ -66,4 +70,5 @@ NaviBar.propTypes = {
   onLoggedOut: PropTypes.func.isRequired,
   onSearch: PropTypes.func.isRequired,
 };
+
 export default NaviBar;
