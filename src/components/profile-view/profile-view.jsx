@@ -256,4 +256,5 @@ ProfileView.propTypes = {
     })
   ).isRequired,
 };
+
 export default ProfileView;
