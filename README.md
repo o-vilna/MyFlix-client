@@ -1,5 +1,18 @@
 # myFlix Client-Side Application
 
+## Live Demo
+Experience the myFlix application in action by visiting our live demo: [m-flixx.netlify.app](https://m-flixx.netlify.app/)
+
+In this demo, you can:
+- Browse through the collection of movies
+- Create a user account
+- Add movies to your favorites list
+- Update your profile information
+- Search and filter movies
+- View detailed information about movies, directors, and genres
+
+Feel free to explore all the features of the application!
+
 ## Objective
 This project aims to build the client-side of the myFlix movie app using React. It integrates with the existing server-side code (REST API and database) built in a previous project. The client-side will allow users to interact with the app and receive data from the server-side.
 
